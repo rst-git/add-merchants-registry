@@ -1,6 +1,9 @@
 # add-merchants-registry
 
-Serviço Spring Boot para registro e gerenciamento de merchants.
+Serviço Spring Boot para cadastrar Estabelecimentos Comerciais.
+
+## Versao
+- 0.0.1-beta 
 
 ## Requisitos
 - **Java:** 21
