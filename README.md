@@ -2,8 +2,8 @@
 
 Serviço Spring Boot para cadastrar Estabelecimentos Comerciais.
 
-## Versao
-- 0.0.1-beta 
+## Versão
+- `0.0.1-SNAPSHOT`
 
 ## Requisitos
 - **Java:** 21
@@ -25,33 +25,66 @@ add-merchants-registry/
 └── src/
     ├── main/
     │   ├── java/
-    │   │   └── br/
-    │   │       └── com/
-    │   │           └── myproject/
-    │   │               ├── AddMerchantsRegistryApplication.java
-    │   │               ├── config/
-    │   │               ├── controller/
-    │   │               ├── dto/
-    │   │               ├── model/
-    │   │               │   └── Merchant.java
-    │   │               ├── repository/
-    │   │               │   └── MerchantRepository.java
-    │   │               └── service/
+    │   │   └── br/com/myproject/
+    │   │       ├── AddMerchantsRegistryApplication.java
+    │   │       ├── config/
+    │   │       ├── controller/MerchantController.java
+    │   │       ├── dto/MerchantRequest.java
+    │   │       ├── exception/
+    │   │       │   ├── GlobalExceptionHandler.java
+    │   │       │   └── InvalidCnpjException.java
+    │   │       ├── model/Merchant.java
+    │   │       ├── repository/MerchantRepository.java
+    │   │       ├── service/MerchantServiceImpl.java
+    │   │       └── validation/MerchantRequestValidator.java
     │   └── resources/
     │       ├── application.properties
     │       ├── application-h2.properties
     │       ├── application-oracle.properties
     │       ├── static/
     │       └── templates/
-    └── test/
-        └── java/
-            └── br/
-                └── com/
-                    └── myproject/
-                        ├── AddMerchantsRegistryApplicationTests.java
-                        └── repository/
-                            └── MerchantRepositoryTest.java
+    └── test/java/br/com/myproject/
+        ├── AddMerchantsRegistryApplicationTests.java
+        ├── controller/MerchantControllerValidationTest.java
+        ├── repository/MerchantRepositoryTest.java
+        ├── service/MerchantServiceImplTest.java
+        └── validation/MerchantRequestValidatorTest.java
 ```
+## API de Merchants
+
+A API usa o prefixo `/merchants` e oferece estas operações:
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `POST` | `/merchants` | Cadastra um merchant. Retorna `201 Created`. |
+| `GET` | `/merchants/{cnpj}` | Busca um merchant pelo CNPJ. Retorna `404 Not Found` se não existir. |
+| `GET` | `/merchants` | Lista todos os merchants. |
+
+Exemplo de cadastro:
+
+```http
+POST /merchants
+Content-Type: application/json
+```
+
+```json
+{
+   "cnpj": "11.222.333/0001-81",
+   "razaoSocial": "Padaria Central Ltda"
+}
+```
+
+A resposta contém `merchantId`, `cnpj` e `razaoSocial`. A validação aceita CNPJs numéricos e alfanuméricos, com ou sem a pontuação usual. Para a consulta, prefira informar o CNPJ sem pontuação no caminho:
+
+```http
+GET /merchants/11222333000181
+GET /merchants
+```
+
+CNPJ inválido retorna `400 Bad Request` com uma resposta no formato Problem Details. A documentação interativa OpenAPI/Swagger fica disponível em:
+
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- Especificação OpenAPI: `http://localhost:8080/v3/api-docs`
 
 ## Persistência e Suporte Multi-Banco (H2 / Oracle)
 
@@ -111,6 +144,13 @@ Parâmetros configuráveis via variáveis de ambiente:
 ```
 
 ### Executar Testes
+
+Windows PowerShell:
+```powershell
+.\mvnw.cmd test
+```
+
+Linux / macOS:
 ```bash
 ./mvnw test
 ```
